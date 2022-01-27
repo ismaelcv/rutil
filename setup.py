@@ -7,17 +7,22 @@ base_dependencies = [
 
 
 additional_dependencies = {
-    "dev": ["black>=21.9b0", "pre-commit>=2.15.0", "pytest>=6.2.1", "pylint>=2.7.4", "jupyterlab","twine"],
+    "dev": [
+        "black>=21.9b0",
+        "pre-commit>=2.15.0",
+        "pytest>=6.2.1",
+        "pylint>=2.7.4",
+        "jupyterlab",
+        "twine",
+        "seaborn",
+    ],
 }
 
 VERSION = "0.0.1"
 DESCRIPTION = "R original utilities now in python"
-LONG_DESCRIPTION = """
-    The idea of this package is to translate useful R functions into python
-    The first implementation is the R str() function to show the structure of pandas dataframes
 
-    """
-
+with open("README.md", "r", encoding="utf8") as fh:
+    LONG_DESCRIPTION = fh.read()
 
 setup(
     name="rutil",
@@ -25,12 +30,12 @@ setup(
     package_dir={"": "rutil"},
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
+    long_description_content_type="text/markdown",
     author="Ismael Cabral",
     version="0.0.1",
     py_modules=["rutil"],
-    keywords= ["R language", "R","str()","pandas","struture"],
+    keywords=["R language", "R", "str()", "pandas", "struture"],
     install_requires=base_dependencies,
     extras_require=additional_dependencies,
+    python_requires=">=3.6",
 )
-
-

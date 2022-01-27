@@ -1,16 +1,19 @@
 import pandas as pd
 
-STRING_VALUE_LENGTH = 75
 
-
-def pystr(df: pd.DataFrame) -> None:
+def pystr(
+    df: pd.DataFrame,
+    colname_len: int = 18,
+    dtype_len: int = 12,
+    content_len: int = 75,
+) -> pd.DataFrame:
 
     print(f"Pandas DataFrame {df.shape[0]} obs. of {df.shape[1]} variables")
     n_values = 50 if df.shape[0] > 50 else df.shape[0]
 
     for col_name in df.columns:
 
-        str_dtype = _parse_dtypes(df, col_name)
+        str_dtype = _parse_dtypes(df, col_name, dtype_len)
 
         if "float" in str_dtype:
             rounded_vals_str = [round(x, 1) if x > 1 else round(x, 2) for x in df[col_name].values[:n_values]]
@@ -20,19 +23,21 @@ def pystr(df: pd.DataFrame) -> None:
         else:
             values_str = ", ".join([str(x) for x in df[col_name].values[:n_values]])
 
-        if len(values_str) > STRING_VALUE_LENGTH:
-            values_str = f"{values_str[:STRING_VALUE_LENGTH]}..."
+        if len(values_str) > content_len:
+            values_str = f"{values_str[:content_len]}..."
 
-        print(f"$ {_parse_string(col_name)}: {str_dtype} {values_str}")
+        print(f"$ {_parse_string(col_name,colname_len)}: {str_dtype} {values_str}")
+
+    return df
 
 
-def _parse_string(string_name: str, string_size: int = 18) -> str:
+def _parse_string(string_name: str, colname_len: int = 28) -> str:
 
-    if len(string_name) > string_size:
-        return f"{string_name[:string_size-2]}.."
+    if len(string_name) > colname_len:
+        return f"{string_name[:colname_len-2]}.."
 
-    if len(string_name) < string_size:
-        return string_name.ljust(string_size)
+    if len(string_name) < colname_len:
+        return string_name.ljust(colname_len)
 
     return string_name
 
@@ -46,18 +51,18 @@ SAMPLE_SIZE = 30
 PRIMITIVE_TYPES = ["int", "float", "bool"]
 
 
-def _parse_dtypes(df: pd.DataFrame, col_name: str) -> str:
+def _parse_dtypes(df: pd.DataFrame, col_name: str, dtype_len: int) -> str:
 
     data_type = str(df.dtypes[col_name])
 
     if _contains(data_type, PRIMITIVE_TYPES):
-        return _parse_string(data_type, 12)
+        return _parse_string(data_type, dtype_len)
 
     classes = list(dict.fromkeys([str(type(x)) for x in df[col_name].sample(SAMPLE_SIZE).dropna()]))
 
     if len(classes) == 0:
-        return _parse_string("Null", 12)
+        return _parse_string("Null", dtype_len)
     if len(classes) == 1:
-        return _parse_string(classes[0].replace("<class '", "").replace("'>", ""), 12)
+        return _parse_string(classes[0].replace("<class '", "").replace("'>", ""), dtype_len)
 
-    return _parse_string(f"{len(classes)} types", 12)
+    return _parse_string(f"{len(classes)} types", dtype_len)
