@@ -11,6 +11,9 @@ def pystr(
     print(f"Pandas DataFrame {df.shape[0]} obs. of {df.shape[1]} variables")
     n_values = 50 if df.shape[0] > 50 else df.shape[0]
 
+    if len(df) == 0:
+        return df
+
     for col_name in df.columns:
 
         str_dtype = _parse_dtypes(df, col_name, dtype_len)
@@ -47,11 +50,13 @@ def _contains(string: str, string_list: list) -> bool:
     return any([x in string for x in string_list])
 
 
-SAMPLE_SIZE = 30
-PRIMITIVE_TYPES = ["int", "float", "bool"]
-
-
 def _parse_dtypes(df: pd.DataFrame, col_name: str, dtype_len: int) -> str:
+
+    SAMPLE_SIZE = 30
+    PRIMITIVE_TYPES = ["int", "float", "bool"]
+
+    if len(df) < SAMPLE_SIZE:
+        SAMPLE_SIZE = len(df)
 
     data_type = str(df.dtypes[col_name])
 
